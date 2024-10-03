@@ -1,0 +1,41 @@
+name: Deploy to AWS Fargate
+
+on:
+  push:
+    branches:
+      - main  # CSC Branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest  # Validate AWS support
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      # Step 4: Build Docker image valdate info for AWS
+      - name: Build Docker image
+        run: |
+          IMAGE_URI=<account-id>.dkr.ecr.<region>.amazonaws.com/superset:latest
+          docker build -t $IMAGE_URI .
+      
+      # Step 5: Push Docker image to ECR
+      - name: Push Docker image to Amazon ECR
+        run: |
+          IMAGE_URI=<account-id>.dkr.ecr.<region>.amazonaws.com/superset:latest
+          docker push $IMAGE_URI
+
+      # Step 6: Update ECS Service
+      - name: Deploy to ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ecs-task-def.json  # Update with the path to your task definition file validate with AWS
+          service: <your-ecs-service-name>   # Update with the path to your task definition file validate with AWS
+          cluster: <your-ecs-cluster-name> # Update with the path to your task definition file validate with AWS
+          wait-for-service-stability: true
