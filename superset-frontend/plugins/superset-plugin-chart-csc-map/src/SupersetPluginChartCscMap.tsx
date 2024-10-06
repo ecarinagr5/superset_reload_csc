@@ -58,7 +58,7 @@ const Styles = styled.div<SupersetPluginChartCscMapStylesProps>`
  *  * FormData (your controls!) provided as props by transformProps.ts
  */
 
-export default function SupersetPluginChartCscMap(props: SupersetPluginChartCscMapProps) {
+export default function SupersetPluginChartCscMap(props:any) {
   // height and width are the height and width of the DOM element as it exists in the dashboard.
   // There is also a `data` prop, which is, of course, your DATA 🎉
   const { data, height, width } = props;
@@ -72,7 +72,7 @@ export default function SupersetPluginChartCscMap(props: SupersetPluginChartCscM
     console.log('Plugin element caruba', root);
   });
 
-  console.log('Plugin props', props);
+  console.log('Plugin props -> HERE', props);
 
   return (
     <Styles
