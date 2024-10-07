@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -17,50 +18,73 @@
  * under the License.
  */
 // eslint-disable-next-line no-restricted-syntax
-import React, { useEffect, createRef, useState } from 'react';
-// eslint-disable-next-line import/no-extraneous-dependencies
-import ReactMapGL, { Source, Layer, LayerProps, Marker } from 'react-map-gl';
-// eslint-disable-next-line import/no-extraneous-dependencies
+import React from 'react';
+import ReactMapGL, {
+  Source,
+  Layer,
+  LayerProps,
+  Marker,
+  NavigationControl,
+  FullscreenControl,
+} from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-const TOKEN = "pk.eyJ1Ijoic3R2eiIsImEiOiJjazJ0OGsyNGMxOHZhM29udmg2NmR1ZnB6In0.a2674pyiTcN1Dl_6QM7s7w"
+const TOKEN =
+  'pk.eyJ1Ijoic3R2eiIsImEiOiJjazJ0OGsyNGMxOHZhM29udmg2NmR1ZnB6In0.a2674pyiTcN1Dl_6QM7s7w';
 
 const SupersetPluginChartCscMap = (props: any) => {
   const { data_iplinks } = props;
   const [viewport, setViewport] = React.useState({
     latitude: 19.629971,
     longitude: -99.149725,
-    zoom: 5,
+    zoom: 3.5,
     width: '100%',
     height: '500px',
   });
 
   // Create a unique set of markers from the data
-  const uniqueMarkers = {};
-  data_iplinks?.forEach((link) => {
-    uniqueMarkers[`${link.SideA_Lon},${link.SideA_Lat}`] = {
-      latitude: link.SideA_Lat,
-      longitude: link.SideA_Lon,
-    };
-    uniqueMarkers[`${link.SideB_Lon},${link.SideB_Lat}`] = {
-      latitude: link.SideB_Lat,
-      longitude: link.SideB_Lon,
-    };
-  });
+  const uniqueMarkers: {
+    [key: string]: { latitude: number; longitude: number };
+  } = {};
+  data_iplinks?.forEach(
+    (link: {
+      SideA_Lon: any;
+      SideA_Lat: any;
+      SideB_Lon: any;
+      SideB_Lat: any;
+    }) => {
+      uniqueMarkers[`${link.SideA_Lon},${link.SideA_Lat}`] = {
+        latitude: link.SideA_Lat,
+        longitude: link.SideA_Lon,
+      };
+      uniqueMarkers[`${link.SideB_Lon},${link.SideB_Lat}`] = {
+        latitude: link.SideB_Lat,
+        longitude: link.SideB_Lon,
+      };
+    },
+  );
 
   // Transform the data into GeoJSON format for lines
-  const lineFeatures = data_iplinks?.map((link) => ({
-    type: 'Feature',
-    geometry: {
-      type: 'LineString',
-      coordinates: [
-        [link.SideA_Lon, link.SideA_Lat], // [longitude, latitude]
-        [link.SideB_Lon, link.SideB_Lat],
-      ],
-    },
-    properties: {
-      name: link.LinkName,
-    },
-  }));
+  const lineFeatures = data_iplinks?.map(
+    (link: {
+      SideA_Lon: any;
+      SideA_Lat: any;
+      SideB_Lon: any;
+      SideB_Lat: any;
+      LinkName: any;
+    }) => ({
+      type: 'Feature',
+      geometry: {
+        type: 'LineString',
+        coordinates: [
+          [link.SideA_Lon, link.SideA_Lat], // [longitude, latitude]
+          [link.SideB_Lon, link.SideB_Lat],
+        ],
+      },
+      properties: {
+        name: link.LinkName,
+      },
+    }),
+  );
 
   const geojsonData = {
     type: 'FeatureCollection',
@@ -72,16 +96,31 @@ const SupersetPluginChartCscMap = (props: any) => {
     id: 'line-layer',
     type: 'line',
     paint: {
-      'line-color': '#FF0000',
-      'line-width': 2,
+      // eslint-disable-next-line theme-colors/no-literal-colors
+      'line-color': 'blue',
+      'line-width': 0.5,
     },
   };
 
+  const typeOfView = {
+    streets9: 'mapbox://styles/mapbox/streets-v9',
+    standard: 'mapbox://styles/mapbox/standard',
+    satellite: 'mapbox://styles/mapbox/standard-satellite',
+    streetsv12: 'mapbox://styles/mapbox/streets-v12',
+    outdoorsv12: 'mapbox://styles/mapbox/outdoors-v12',
+    lightv11: 'mapbox://styles/mapbox/light-v11',
+    darkv11: 'mapbox://styles/mapbox/dark-v11',
+    satellitev9: 'mapbox://styles/mapbox/satellite-v9',
+    satelliteStreets: 'mapbox://styles/mapbox/satellite-streets-v12',
+    navigationDay: 'mapbox://styles/mapbox/navigation-day-v1',
+    navigationNight: 'mapbox://styles/mapbox/navigation-night-v1',
+  };
   return (
     <ReactMapGL
       {...viewport}
       mapboxApiAccessToken={TOKEN}
-      onViewportChange={(newViewport) => setViewport(newViewport)}
+      mapStyle={typeOfView?.streets9}
+      onViewportChange={newViewport => setViewport(newViewport)}
     >
       {/* Render unique markers */}
       {Object.values(uniqueMarkers).map((marker, index) => (
@@ -90,7 +129,15 @@ const SupersetPluginChartCscMap = (props: any) => {
           latitude={marker.latitude}
           longitude={marker.longitude}
         >
-          <div style={{ background: 'blue', height: '10px', width: '10px', borderRadius: '50%' }} />
+          <div
+            style={{
+              // eslint-disable-next-line theme-colors/no-literal-colors
+              background: 'blue',
+              height: '5px',
+              width: '5px',
+              borderRadius: '50%',
+            }}
+          />
         </Marker>
       ))}
 
@@ -98,6 +145,8 @@ const SupersetPluginChartCscMap = (props: any) => {
       <Source id="line-source" type="geojson" data={geojsonData}>
         <Layer {...lineLayerStyle} />
       </Source>
+      <FullscreenControl />
+      <NavigationControl />
     </ReactMapGL>
   );
 };
