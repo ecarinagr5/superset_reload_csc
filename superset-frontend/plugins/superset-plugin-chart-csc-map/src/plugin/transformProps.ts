@@ -1,3 +1,4 @@
+/* eslint-disable import/extensions */
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -18,6 +19,7 @@
  */
 import { ChartProps, TimeseriesDataRecord } from '@superset-ui/core';
 import data_iplinks from '../../constants/ip_links.json';
+import mockData from '../../constants/mock-alarms.json';
 
 export default function transformProps(chartProps: ChartProps) {
   /**
@@ -51,7 +53,7 @@ export default function transformProps(chartProps: ChartProps) {
    */
   const { width, height, formData, queriesData } = chartProps;
   const { boldText, headerFontSize, headerText } = formData;
-  const data = queriesData[0].data as TimeseriesDataRecord[];
+  const data = mockData; // queriesData[0].data as TimeseriesDataRecord[]; change after implementing the backend
 
   return {
     width,
