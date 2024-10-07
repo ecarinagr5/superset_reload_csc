@@ -28,6 +28,7 @@ import ReactMapGL, {
   FullscreenControl,
 } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+
 const TOKEN =
   'pk.eyJ1Ijoic3R2eiIsImEiOiJjazJ0OGsyNGMxOHZhM29udmg2NmR1ZnB6In0.a2674pyiTcN1Dl_6QM7s7w';
 
@@ -121,29 +122,31 @@ const SupersetPluginChartCscMap = (props: any) => {
       {...viewport}
       mapboxApiAccessToken={TOKEN}
       mapStyle={typeOfView?.satelliteStreets}
-      onViewportChange={newViewport => setViewport(newViewport)}
+      onViewportChange={(newViewport: any) => setViewport(newViewport)}
     >
       {/* Render unique markers for */}
-      {Object.values(uniqueMarkers).map((marker, index) => (
-        <Marker
-          key={`marker-${index}`}
-          latitude={marker.latitude}
-          longitude={marker.longitude}
-        >
-          <div
-            style={{
-              // eslint-disable-next-line theme-colors/no-literal-colors
-              background: 'purple',
-              height: '5px',
-              width: '5px',
-              borderRadius: '50%',
-            }}
-          />
-        </Marker>
-      ))}
+      {Object.values(uniqueMarkers).map(
+        (marker: { latitude: number; longitude: number }, index: number) => (
+          <Marker
+            key={`marker-${index}`}
+            latitude={marker.latitude}
+            longitude={marker.longitude}
+          >
+            <div
+              style={{
+                // eslint-disable-next-line theme-colors/no-literal-colors
+                background: 'purple',
+                height: '5px',
+                width: '5px',
+                borderRadius: '50%',
+              }}
+            />
+          </Marker>
+        ),
+      )}
 
       {/* Render unique markers for alarms */}
-      {alarms?.map((marker, index) => (
+      {alarms?.map((marker: any[], index: number) => (
         <Marker
           key={`marker-${index}`}
           latitude={marker[4]}
