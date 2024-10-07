@@ -17,6 +17,7 @@
  * under the License.
  */
 import { ChartProps, TimeseriesDataRecord } from '@superset-ui/core';
+import data_iplinks from '../../constants/ip_links.json';
 
 export default function transformProps(chartProps: ChartProps) {
   /**
@@ -52,12 +53,11 @@ export default function transformProps(chartProps: ChartProps) {
   const { boldText, headerFontSize, headerText } = formData;
   const data = queriesData[0].data as TimeseriesDataRecord[];
 
-
   return {
     width,
     height,
     data,
-    // and now your control data, manipulated as needed, and passed through as props!
+    data_iplinks,
     boldText,
     headerFontSize,
     headerText,

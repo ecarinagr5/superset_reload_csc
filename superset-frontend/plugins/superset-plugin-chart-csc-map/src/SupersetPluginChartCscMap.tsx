@@ -19,71 +19,84 @@
 // eslint-disable-next-line no-restricted-syntax
 import React, { useEffect, createRef, useState } from 'react';
 // eslint-disable-next-line import/no-extraneous-dependencies
-import ReactMapGL, { Source, Layer, LayerProps } from 'react-map-gl';
+import ReactMapGL, { Source, Layer, LayerProps, Marker } from 'react-map-gl';
 // eslint-disable-next-line import/no-extraneous-dependencies
 import 'mapbox-gl/dist/mapbox-gl.css';
+const TOKEN = "pk.eyJ1Ijoic3R2eiIsImEiOiJjazJ0OGsyNGMxOHZhM29udmg2NmR1ZnB6In0.a2674pyiTcN1Dl_6QM7s7w"
 
 const SupersetPluginChartCscMap = (props: any) => {
-  const [viewport, setViewport] = useState({
-    latitude: 51.505,
-    longitude: -0.09,
-    zoom: 10,
+  const { data_iplinks } = props;
+  const [viewport, setViewport] = React.useState({
+    latitude: 19.629971,
+    longitude: -99.149725,
+    zoom: 5,
     width: '100%',
     height: '500px',
   });
 
-  const rootElem = createRef<HTMLDivElement>();
+  // Create a unique set of markers from the data
+  const uniqueMarkers = {};
+  data_iplinks?.forEach((link) => {
+    uniqueMarkers[`${link.SideA_Lon},${link.SideA_Lat}`] = {
+      latitude: link.SideA_Lat,
+      longitude: link.SideA_Lon,
+    };
+    uniqueMarkers[`${link.SideB_Lon},${link.SideB_Lat}`] = {
+      latitude: link.SideB_Lat,
+      longitude: link.SideB_Lon,
+    };
+  });
 
-  // Define the GeoJSON data for the line
-  const lineData: any = {
+  // Transform the data into GeoJSON format for lines
+  const lineFeatures = data_iplinks?.map((link) => ({
     type: 'Feature',
-    properties: {}, // Add an empty properties object
     geometry: {
       type: 'LineString',
       coordinates: [
-        [-0.09, 51.505], // Start point (lng, lat)
-        [-0.1, 51.515], // Middle point
-        [-0.11, 51.525], // End point
+        [link.SideA_Lon, link.SideA_Lat], // [longitude, latitude]
+        [link.SideB_Lon, link.SideB_Lat],
       ],
     },
+    properties: {
+      name: link.LinkName,
+    },
+  }));
+
+  const geojsonData = {
+    type: 'FeatureCollection',
+    features: lineFeatures,
   };
 
-  // Layer style for the line
-  const lineLayer: LayerProps = {
+  // Define layer style for the lines
+  const lineLayerStyle: LayerProps = {
     id: 'line-layer',
     type: 'line',
     paint: {
-      // eslint-disable-next-line theme-colors/no-literal-colors
       'line-color': '#FF0000',
-      'line-width': 3,
+      'line-width': 2,
     },
   };
 
-  // Often, you just want to access the DOM and do whatever you want.
-  // Here, you can do that with createRef, and the useEffect hook.
-  useEffect(() => {
-    const root = rootElem.current as HTMLElement;
-  });
-
-  console.log('Plugin props -> HERE', props);
-  //      <pre>${JSON.stringify(data, null, 2)}</pre>
-  //      ref={rootElem}
   return (
     <ReactMapGL
       {...viewport}
-      mapboxApiAccessToken="pk.eyJ1Ijoic3R2eiIsImEiOiJjazJ0OGsyNGMxOHZhM29udmg2NmR1ZnB6In0.a2674pyiTcN1Dl_6QM7s7w"
-      onViewportChange={(
-        newViewport: React.SetStateAction<{
-          latitude: number;
-          longitude: number;
-          zoom: number;
-          width: string;
-          height: string;
-        }>,
-      ) => setViewport(newViewport)}
+      mapboxApiAccessToken={TOKEN}
+      onViewportChange={(newViewport) => setViewport(newViewport)}
     >
-      <Source id="line-source" type="geojson" data={lineData}>
-        <Layer {...lineLayer} />
+      {/* Render unique markers */}
+      {Object.values(uniqueMarkers).map((marker, index) => (
+        <Marker
+          key={`marker-${index}`}
+          latitude={marker.latitude}
+          longitude={marker.longitude}
+        >
+          <div style={{ background: 'blue', height: '10px', width: '10px', borderRadius: '50%' }} />
+        </Marker>
+      ))}
+
+      {/* Render lines */}
+      <Source id="line-source" type="geojson" data={geojsonData}>
+        <Layer {...lineLayerStyle} />
       </Source>
     </ReactMapGL>
   );
