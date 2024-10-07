@@ -38,7 +38,6 @@ export type SupersetPluginChartCscMapQueryFormData = QueryFormData &
   SupersetPluginChartCscMapCustomizeProps;
 
 export type SupersetPluginChartCscMapProps = SupersetPluginChartCscMapStylesProps &
-  SupersetPluginChartCscMapCustomizeProps & {
-    data: TimeseriesDataRecord[];
-    // add typing here for the props you pass in from transformProps.ts!
+SupersetPluginChartCscMapCustomizeProps & {
+      data: TimeseriesDataRecord[];
   };

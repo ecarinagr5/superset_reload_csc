@@ -25,4 +25,5 @@ docs/.zshrc
 docs/intro.md
 **/superset-frontend/node_modules/
 **/node_modules/
+**/static/
   
