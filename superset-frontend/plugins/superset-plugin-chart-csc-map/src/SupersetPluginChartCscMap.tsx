@@ -32,14 +32,15 @@ const TOKEN =
   'pk.eyJ1Ijoic3R2eiIsImEiOiJjazJ0OGsyNGMxOHZhM29udmg2NmR1ZnB6In0.a2674pyiTcN1Dl_6QM7s7w';
 
 const SupersetPluginChartCscMap = (props: any) => {
-  const { data_iplinks } = props;
   const [viewport, setViewport] = React.useState({
     latitude: 19.629971,
     longitude: -99.149725,
-    zoom: 3.5,
+    zoom: 4,
     width: '100%',
-    height: '500px',
+    height: '700px',
   });
+  const { data_iplinks, data } = props;
+  const alarms = data?.data?.content;
 
   // Create a unique set of markers from the data
   const uniqueMarkers: {
@@ -97,8 +98,8 @@ const SupersetPluginChartCscMap = (props: any) => {
     type: 'line',
     paint: {
       // eslint-disable-next-line theme-colors/no-literal-colors
-      'line-color': 'blue',
-      'line-width': 0.5,
+      'line-color': 'purple',
+      'line-width': 1,
     },
   };
 
@@ -119,10 +120,10 @@ const SupersetPluginChartCscMap = (props: any) => {
     <ReactMapGL
       {...viewport}
       mapboxApiAccessToken={TOKEN}
-      mapStyle={typeOfView?.streets9}
+      mapStyle={typeOfView?.satelliteStreets}
       onViewportChange={newViewport => setViewport(newViewport)}
     >
-      {/* Render unique markers */}
+      {/* Render unique markers for */}
       {Object.values(uniqueMarkers).map((marker, index) => (
         <Marker
           key={`marker-${index}`}
@@ -132,7 +133,26 @@ const SupersetPluginChartCscMap = (props: any) => {
           <div
             style={{
               // eslint-disable-next-line theme-colors/no-literal-colors
-              background: 'blue',
+              background: 'purple',
+              height: '5px',
+              width: '5px',
+              borderRadius: '50%',
+            }}
+          />
+        </Marker>
+      ))}
+
+      {/* Render unique markers for alarms */}
+      {alarms?.map((marker, index) => (
+        <Marker
+          key={`marker-${index}`}
+          latitude={marker[4]}
+          longitude={marker[5]}
+        >
+          <div
+            style={{
+              // eslint-disable-next-line theme-colors/no-literal-colors
+              background: `${marker[1] === 'Warning' ? '#B6BF43' : marker[1] === 'Cleared' ? '#79A9C1' : 'red'}`,
               height: '5px',
               width: '5px',
               borderRadius: '50%',
@@ -146,7 +166,9 @@ const SupersetPluginChartCscMap = (props: any) => {
         <Layer {...lineLayerStyle} />
       </Source>
       <FullscreenControl />
-      <NavigationControl />
+      <div>
+        <NavigationControl />
+      </div>
     </ReactMapGL>
   );
 };
