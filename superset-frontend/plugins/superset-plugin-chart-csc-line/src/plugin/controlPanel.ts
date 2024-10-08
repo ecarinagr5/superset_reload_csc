@@ -19,7 +19,6 @@
 import { t, validateNonEmpty } from '@superset-ui/core';
 import {
   ControlPanelConfig,
-  sections,
   sharedControls,
 } from '@superset-ui/chart-controls';
 
@@ -131,6 +130,28 @@ const config: ControlPanelConfig = {
           {
             name: 'row_limit',
             config: sharedControls.row_limit,
+          },
+        ],
+        [
+          {
+            name: 'sort_by_vendor', 
+            config: {
+              type: 'SelectControl',
+              label: t('Vendor Name'),
+              clearable: false,
+              default: ['ALTAN'],
+              choices: [
+                ['TELCEL'],
+                ['ALTAN'],
+                ['BAIT'],
+                ['MEGA'],
+                ['ATT'],
+              ],
+              renderTrigger: true,
+              description: t(
+                'The name of the vendor you want to show in the image',
+              ),
+            },
           },
         ],
       ],
