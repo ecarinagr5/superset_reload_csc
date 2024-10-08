@@ -83,6 +83,7 @@ import { HandlebarsChartPlugin } from '@superset-ui/plugin-chart-handlebars';
 import { FilterPlugins } from 'src/constants';
 import TimeTableChartPlugin from '../TimeTable';
 import { SupersetPluginChartCscMap } from 'superset-plugin-chart-csc-map';
+import { SupersetPluginChartCscLine } from 'superset-plugin-chart-csc-line';
 
 export default class MainPreset extends Preset {
   constructor() {
@@ -179,6 +180,7 @@ export default class MainPreset extends Preset {
         new HandlebarsChartPlugin().configure({ key: 'handlebars' }),
         new EchartsBubbleChartPlugin().configure({ key: 'bubble_v2' }),
         new SupersetPluginChartCscMap().configure({ key: 'csc_map' }),
+        new SupersetPluginChartCscLine().configure({ key: 'csc_line' }),
         ...experimentalPlugins,
       ],
     });
