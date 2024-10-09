@@ -99,7 +99,7 @@ const SupersetPluginChartCscMap = (props: any) => {
     type: 'line',
     paint: {
       // eslint-disable-next-line theme-colors/no-literal-colors
-      'line-color': 'blue',
+      'line-color': "#5eff33",
       'line-width': 1,
     },
   };
@@ -135,7 +135,7 @@ const SupersetPluginChartCscMap = (props: any) => {
             <div
               style={{
                 // eslint-disable-next-line theme-colors/no-literal-colors
-                background: 'blue',
+                background: "#5eff33",
                 height: '5px',
                 width: '5px',
                 borderRadius: '50%',

@@ -35,7 +35,7 @@ const Styles = styled.div`
     flex-direction: row;
     align-items: center;
     justify-content: center;
-    padding: 0 20px;
+    padding: 0 0;
   }
 `;
 
@@ -49,12 +49,12 @@ const vendorLogo:any = {
 
 
 export default function SupersetPluginChartCscLine(props: any) {
-const {  data, vendor } = props;  
-const [imageLogo,] = useState<any>(vendorLogo[vendor[0]?.toUpperCase()]);
-  console.log('SupersetPluginChartCscLine props', data);
+const { vendor } = props;  
+const numChart = Math.floor(Math.random() * 1000);
+const [imageLogo,] = useState<any>(vendorLogo[vendor]);
   useLayoutEffect(() => {
     // Create root element
-    const root = am5.Root.new('chartdiv');
+    const root = am5.Root.new(`${"chartdiv"}${numChart}`);
 
     // Set themes
     root.setThemes([am5themes_Animated.new(root)]);
@@ -665,7 +665,6 @@ let yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
 }));
 
 
-// Add series
 let series = chart.series.push(am5xy.LineSeries.new(root, {
   minBulletDistance: 10,
   connect: false,
@@ -727,8 +726,8 @@ cursor.lineY.set("visible", false);
     <Styles
     className="wrap-cscline"
   >
-      <img src={imageLogo} alt={'VendorImage'} width={"100px"}  height={"auto"} />
-      <div id="chartdiv" style={{ width: '100%', height: '200px' }} />;
+      <img src={imageLogo} alt={'VendorImage'} width={"80px"}  height={"auto"} />
+      <div id={`${"chartdiv"}${numChart}`} style={{ width: '100%', height: '100px' }} />;
     </Styles>
   );
 }

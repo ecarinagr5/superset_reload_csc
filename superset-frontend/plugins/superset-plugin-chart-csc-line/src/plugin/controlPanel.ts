@@ -167,7 +167,6 @@ const config: ControlPanelConfig = {
               type: 'TextControl',
               default: 'Hello, World!',
               renderTrigger: true,
-              // ^ this makes it apply instantaneously, without triggering a "run query" button
               label: t('Header Text'),
               description: t('The text you want to see in the header'),
             },

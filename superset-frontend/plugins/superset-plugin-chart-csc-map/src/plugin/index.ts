@@ -36,7 +36,7 @@ export default class SupersetPluginChartCscMap extends ChartPlugin {
   constructor() {
     const metadata = new ChartMetadata({
       description: 'Superset Plugin Chart Csc Map',
-      name: t('Csc Map'),
+      name: t('CSC Map'),
       thumbnail,
     });
 
