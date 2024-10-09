@@ -24,7 +24,6 @@ import ReactMapGL, {
   Layer,
   LayerProps,
   Marker,
-  NavigationControl,
   FullscreenControl,
 } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
@@ -34,11 +33,11 @@ const TOKEN =
 
 const SupersetPluginChartCscMap = (props: any) => {
   const [viewport, setViewport] = React.useState({
-    latitude: 19.629971,
-    longitude: -99.149725,
-    zoom: 4,
+    latitude: 23.634501, 
+    longitude: -102.552784,
+    zoom: 3.5,
     width: '100%',
-    height: '700px',
+    height: '500px',
   });
   const { data_iplinks, data } = props;
   const alarms = data?.data?.content;
@@ -99,7 +98,7 @@ const SupersetPluginChartCscMap = (props: any) => {
     type: 'line',
     paint: {
       // eslint-disable-next-line theme-colors/no-literal-colors
-      'line-color': 'blue',
+      'line-color': "#45bed6",
       'line-width': 1,
     },
   };
@@ -121,7 +120,7 @@ const SupersetPluginChartCscMap = (props: any) => {
     <ReactMapGL
       {...viewport}
       mapboxApiAccessToken={TOKEN}
-      mapStyle={typeOfView?.satelliteStreets}
+      mapStyle={typeOfView?.lightv11}
       onViewportChange={(newViewport: any) => setViewport(newViewport)}
     >
       {/* Render unique markers for */}
@@ -135,9 +134,9 @@ const SupersetPluginChartCscMap = (props: any) => {
             <div
               style={{
                 // eslint-disable-next-line theme-colors/no-literal-colors
-                background: 'blue',
-                height: '5px',
-                width: '5px',
+                background: "#45bed6",
+                height: '6px',
+                width: '6px',
                 borderRadius: '50%',
               }}
             />
@@ -156,8 +155,8 @@ const SupersetPluginChartCscMap = (props: any) => {
             style={{
               // eslint-disable-next-line theme-colors/no-literal-colors
               background: `${marker[1] === 'Warning' ? '#B6BF43' : marker[1] === 'Cleared' ? '#79A9C1' : 'red'}`,
-              height: '5px',
-              width: '5px',
+              height: '6px',
+              width: '6px',
               borderRadius: '50%',
             }}
           />
@@ -170,7 +169,6 @@ const SupersetPluginChartCscMap = (props: any) => {
       </Source>
       <FullscreenControl />
       <div>
-        <NavigationControl />
       </div>
     </ReactMapGL>
   );

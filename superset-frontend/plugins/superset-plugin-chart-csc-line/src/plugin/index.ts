@@ -36,7 +36,7 @@ export default class SupersetPluginChartCscLine extends ChartPlugin {
   constructor() {
     const metadata = new ChartMetadata({
       description: 'Superset Plugin Chart Csc Line',
-      name: t('Csc Line'),
+      name: t('CSC Line'),
       thumbnail,
     });
 
