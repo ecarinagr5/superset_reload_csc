@@ -61,7 +61,7 @@ const vendorColors:any = {
   ALTAN: 0xff0000,
   BAIT: 0xFFBF00,
   ATT: 0x0000FF,
-  TELCEL: 0x00FFFF,
+  TELCEL: 0x0000FF,
   MEGA: 0xC0C0C0
 }
 
