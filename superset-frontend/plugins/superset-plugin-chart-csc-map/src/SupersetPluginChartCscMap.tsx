@@ -18,7 +18,7 @@
  * under the License.
  */
 // eslint-disable-next-line no-restricted-syntax
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactMapGL, {
   Source,
   Layer,
@@ -27,26 +27,32 @@ import ReactMapGL, {
   FullscreenControl,
 } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { typeOfView ,geojsonData, TOKEN, lineFeatures} from './utils';
 
-const TOKEN =
-  'pk.eyJ1Ijoic3R2eiIsImEiOiJjazJ0OGsyNGMxOHZhM29udmg2NmR1ZnB6In0.a2674pyiTcN1Dl_6QM7s7w';
 
 const SupersetPluginChartCscMap = (props: any) => {
-  const [viewport, setViewport] = React.useState({
+  const { data_iplinks, data } = props;
+  const [viewport, setViewport] = useState({
     latitude: 23.634501, 
     longitude: -102.552784,
-    zoom: 3.5,
+    zoom: 5,
     width: '100%',
     height: '500px',
   });
-  const { data_iplinks, data } = props;
-  const alarms = data?.data?.content;
+const [alarms, setAlarms] = useState<any>([]);
+const [ipLinks, setIpLinks] = useState<any>([]);
+
+  useEffect(() => {
+    setAlarms(data?.data?.content);
+    setIpLinks(data_iplinks);
+    lineFeatures(data_iplinks);
+  }, [data]);
 
   // Create a unique set of markers from the data
   const uniqueMarkers: {
     [key: string]: { latitude: number; longitude: number };
   } = {};
-  data_iplinks?.forEach(
+  ipLinks?.forEach(
     (link: {
       SideA_Lon: any;
       SideA_Lat: any;
@@ -64,33 +70,7 @@ const SupersetPluginChartCscMap = (props: any) => {
     },
   );
 
-  // Transform the data into GeoJSON format for lines
-  const lineFeatures = data_iplinks?.map(
-    (link: {
-      SideA_Lon: any;
-      SideA_Lat: any;
-      SideB_Lon: any;
-      SideB_Lat: any;
-      LinkName: any;
-    }) => ({
-      type: 'Feature',
-      geometry: {
-        type: 'LineString',
-        coordinates: [
-          [link.SideA_Lon, link.SideA_Lat], // [longitude, latitude]
-          [link.SideB_Lon, link.SideB_Lat],
-        ],
-      },
-      properties: {
-        name: link.LinkName,
-      },
-    }),
-  );
 
-  const geojsonData = {
-    type: 'FeatureCollection',
-    features: lineFeatures,
-  };
 
   // Define layer style for the lines
   const lineLayerStyle: LayerProps = {
@@ -103,19 +83,7 @@ const SupersetPluginChartCscMap = (props: any) => {
     },
   };
 
-  const typeOfView = {
-    streets9: 'mapbox://styles/mapbox/streets-v9',
-    standard: 'mapbox://styles/mapbox/standard',
-    satellite: 'mapbox://styles/mapbox/standard-satellite',
-    streetsv12: 'mapbox://styles/mapbox/streets-v12',
-    outdoorsv12: 'mapbox://styles/mapbox/outdoors-v12',
-    lightv11: 'mapbox://styles/mapbox/light-v11',
-    darkv11: 'mapbox://styles/mapbox/dark-v11',
-    satellitev9: 'mapbox://styles/mapbox/satellite-v9',
-    satelliteStreets: 'mapbox://styles/mapbox/satellite-streets-v12',
-    navigationDay: 'mapbox://styles/mapbox/navigation-day-v1',
-    navigationNight: 'mapbox://styles/mapbox/navigation-night-v1',
-  };
+ 
   return (
     <ReactMapGL
       {...viewport}

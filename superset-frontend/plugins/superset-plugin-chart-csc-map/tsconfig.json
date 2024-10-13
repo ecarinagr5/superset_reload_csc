@@ -29,5 +29,13 @@
     "typeRoots": ["./node_modules/@types"]
   },
   "exclude": ["lib", "test"],
-  "include": ["src/**/*", "types/**/*"]
+  "include": ["src/**/*", "types/**/*"],
+  "references": [
+    {
+      "path": "../../packages/superset-ui-chart-controls"
+    },
+    {
+      "path": "../../packages/superset-ui-core"
+    }
+  ]
 }
