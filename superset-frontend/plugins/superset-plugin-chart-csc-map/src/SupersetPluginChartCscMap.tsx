@@ -18,35 +18,47 @@
  * under the License.
  */
 // eslint-disable-next-line no-restricted-syntax
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactMapGL, {
   Source,
   Layer,
   LayerProps,
   Marker,
   FullscreenControl,
+  NavigationControl,
 } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { typeOfView, TOKEN, mapStyle } from './utils';
+import NavCounter from './components/NavCounter';
+import { Container } from './styles';
+import ChangeMapStyle from './components/ChangeMapStyle';
+import type {FeatureCollection} from 'geojson';
 
-const TOKEN =
-  'pk.eyJ1Ijoic3R2eiIsImEiOiJjazJ0OGsyNGMxOHZhM29udmg2NmR1ZnB6In0.a2674pyiTcN1Dl_6QM7s7w';
+
 
 const SupersetPluginChartCscMap = (props: any) => {
-  const [viewport, setViewport] = React.useState({
-    latitude: 23.634501, 
+  const { data_iplinks, data } = props;
+  const [viewport, setViewport] = useState({
+    latitude: 17.000,
     longitude: -102.552784,
-    zoom: 3.5,
+    zoom: 3.2,
     width: '100%',
     height: '500px',
   });
-  const { data_iplinks, data } = props;
-  const alarms = data?.data?.content;
+  const [alarms, setAlarms] = useState<any>([]);
+  const [ipLinks, setIpLinks] = useState<any>([]);
+  const [styleMap, setStyleMap] = useState(typeOfView[mapStyle[7]]);
+
+  useEffect(() => {
+    setAlarms(data?.data?.content);
+    setIpLinks(data_iplinks);
+  }, [data]);
 
   // Create a unique set of markers from the data
   const uniqueMarkers: {
     [key: string]: { latitude: number; longitude: number };
   } = {};
-  data_iplinks?.forEach(
+  ipLinks?.forEach(
     (link: {
       SideA_Lon: any;
       SideA_Lat: any;
@@ -87,10 +99,11 @@ const SupersetPluginChartCscMap = (props: any) => {
     }),
   );
 
-  const geojsonData = {
+  const geojsonData:FeatureCollection = {
     type: 'FeatureCollection',
     features: lineFeatures,
   };
+
 
   // Define layer style for the lines
   const lineLayerStyle: LayerProps = {
@@ -98,79 +111,77 @@ const SupersetPluginChartCscMap = (props: any) => {
     type: 'line',
     paint: {
       // eslint-disable-next-line theme-colors/no-literal-colors
-      'line-color': "#45bed6",
+      'line-color': "#a13a73",
       'line-width': 1,
     },
   };
 
-  const typeOfView = {
-    streets9: 'mapbox://styles/mapbox/streets-v9',
-    standard: 'mapbox://styles/mapbox/standard',
-    satellite: 'mapbox://styles/mapbox/standard-satellite',
-    streetsv12: 'mapbox://styles/mapbox/streets-v12',
-    outdoorsv12: 'mapbox://styles/mapbox/outdoors-v12',
-    lightv11: 'mapbox://styles/mapbox/light-v11',
-    darkv11: 'mapbox://styles/mapbox/dark-v11',
-    satellitev9: 'mapbox://styles/mapbox/satellite-v9',
-    satelliteStreets: 'mapbox://styles/mapbox/satellite-streets-v12',
-    navigationDay: 'mapbox://styles/mapbox/navigation-day-v1',
-    navigationNight: 'mapbox://styles/mapbox/navigation-night-v1',
-  };
+
   return (
-    <ReactMapGL
-      {...viewport}
-      mapboxApiAccessToken={TOKEN}
-      mapStyle={typeOfView?.lightv11}
-      onViewportChange={(newViewport: any) => setViewport(newViewport)}
-    >
-      {/* Render unique markers for */}
-      {Object.values(uniqueMarkers).map(
-        (marker: { latitude: number; longitude: number }, index: number) => (
+    <Container id="cscmap">
+      <div style={{ display: "flex" }}>
+        <ChangeMapStyle options={mapStyle} setStyleMap={setStyleMap} defaultValue={mapStyle[5]} />
+        <NavCounter alarms={alarms} type={"alarms"} />
+        <NavCounter alarms={ipLinks} type={"iplinks"} />
+      </div>
+      <ReactMapGL
+        {...viewport}
+        mapboxApiAccessToken={TOKEN}
+        mapStyle={styleMap}
+        onViewportChange={(newViewport: any) => setViewport(newViewport)}
+      >
+        {/* Render unique markers for */}
+        {Object.values(uniqueMarkers).map(
+          (marker: { latitude: number; longitude: number }, index: number) => (
+            <Marker
+              key={`marker-${index}`}
+              latitude={marker.latitude}
+              longitude={marker.longitude}
+            >
+              <div
+                style={{
+                  // eslint-disable-next-line theme-colors/no-literal-colors
+                  background: "#45bed6",
+                  height: '6px',
+                  width: '6px',
+                  borderRadius: '50%',
+                }}
+              />
+            </Marker>
+          ),
+        )}
+
+        {/* Render unique markers for alarms */}
+        {alarms?.map((marker: any[], index: number) => (
           <Marker
             key={`marker-${index}`}
-            latitude={marker.latitude}
-            longitude={marker.longitude}
+            latitude={marker[4]}
+            longitude={marker[5]}
           >
             <div
               style={{
                 // eslint-disable-next-line theme-colors/no-literal-colors
-                background: "#45bed6",
+                background: `${marker[1] === 'Warning' ? '#B6BF43' : marker[1] === 'Cleared' ? '#79A9C1' : 'red'}`,
                 height: '6px',
                 width: '6px',
                 borderRadius: '50%',
               }}
             />
           </Marker>
-        ),
-      )}
+        ))}
 
-      {/* Render unique markers for alarms */}
-      {alarms?.map((marker: any[], index: number) => (
-        <Marker
-          key={`marker-${index}`}
-          latitude={marker[4]}
-          longitude={marker[5]}
-        >
-          <div
-            style={{
-              // eslint-disable-next-line theme-colors/no-literal-colors
-              background: `${marker[1] === 'Warning' ? '#B6BF43' : marker[1] === 'Cleared' ? '#79A9C1' : 'red'}`,
-              height: '6px',
-              width: '6px',
-              borderRadius: '50%',
-            }}
-          />
-        </Marker>
-      ))}
-
-      {/* Render lines */}
-      <Source id="line-source" type="geojson" data={geojsonData}>
-        <Layer {...lineLayerStyle} />
-      </Source>
-      <FullscreenControl />
-      <div>
-      </div>
-    </ReactMapGL>
+        {/* Render lines */}
+        <Source id="line-source" type="geojson" data={geojsonData}>
+          <Layer {...lineLayerStyle} />
+        </Source>
+        <div style={{ margin: "10px" }}>
+          <FullscreenControl />
+          <NavigationControl />
+        </div>
+        <div>
+        </div>
+      </ReactMapGL>
+    </Container>
   );
 };
 
