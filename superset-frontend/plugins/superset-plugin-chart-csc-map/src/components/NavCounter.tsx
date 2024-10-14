@@ -1,12 +1,13 @@
 import React, { useMemo } from "react"
-import { WrapNavBar, SideNavBar } from "../styles/index";
+import { WrapNavBar, SideNavBar, HeaderNav, LinksNavBar } from "../styles/index";
 import { SEVERITY } from "../utils/index"
 
 interface NavCounterProps {
-    alarms: any[]
+    alarms: any[],
+    type: string
 }
 
-const NavCounter: React.FC<NavCounterProps> = ({ alarms }) => {
+const NavCounter: React.FC<NavCounterProps> = ({ alarms, type }) => {
 
     const alarmCounts = useMemo(() => {
         const counterAlarms: any = [];
@@ -20,20 +21,25 @@ const NavCounter: React.FC<NavCounterProps> = ({ alarms }) => {
     }, [alarms])
 
     const totalAlarms = alarms?.length;
-
     return (
-        <WrapNavBar>
-            {
-                Object.keys(alarmCounts).map((key, index) => {
-                    const percentage = (Number(alarmCounts[key]) || 0) / totalAlarms * 100;
-                    return (
-                        <SideNavBar key={index} style={{ width: `${percentage}%`, background: SEVERITY[key] }}>
-                            {alarmCounts[key]}
-                        </SideNavBar>
-                    )
-                })
-            }
-        </WrapNavBar>
+        <>
+            <HeaderNav>{type?.toUpperCase()}</HeaderNav>
+            {type === 'alarms' ? <WrapNavBar>
+                {
+
+                    Object.keys(alarmCounts).map((key, index) => {
+                        const percentage = (Number(alarmCounts[key]) || 0) / totalAlarms * 100;
+                        return (
+                            <>
+                                <SideNavBar key={index} style={{ width: `${percentage}%`, background: SEVERITY[key] }}>
+                                    {alarmCounts[key]}
+                                </SideNavBar>
+                            </>
+                        )
+                    })
+                }
+            </WrapNavBar> : <LinksNavBar><SideNavBar>{totalAlarms}</SideNavBar></LinksNavBar>}
+        </>
     )
 }
 

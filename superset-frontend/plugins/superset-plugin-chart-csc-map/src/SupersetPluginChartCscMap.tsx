@@ -25,24 +25,27 @@ import ReactMapGL, {
   LayerProps,
   Marker,
   FullscreenControl,
+  NavigationControl,
 } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { typeOfView, TOKEN } from './utils';
+import { typeOfView, TOKEN, mapStyle } from './utils';
 import NavCounter from './components/NavCounter';
 import { Container } from './styles';
+import ChangeMapStyle from './components/ChangeMapStyle';
 
 
 const SupersetPluginChartCscMap = (props: any) => {
   const { data_iplinks, data } = props;
   const [viewport, setViewport] = useState({
-    latitude: 23.634501,
+    latitude: 18.000,
     longitude: -102.552784,
-    zoom: 3.5,
+    zoom: 3.4,
     width: '100%',
     height: '500px',
   });
   const [alarms, setAlarms] = useState<any>([]);
   const [ipLinks, setIpLinks] = useState<any>([]);
+  const [styleMap, setStyleMap] = useState(typeOfView[mapStyle[7]]);
 
   useEffect(() => {
     setAlarms(data?.data?.content);
@@ -106,19 +109,23 @@ const SupersetPluginChartCscMap = (props: any) => {
     type: 'line',
     paint: {
       // eslint-disable-next-line theme-colors/no-literal-colors
-      'line-color': "#45bed6",
+      'line-color': "#a13a73",
       'line-width': 1,
     },
   };
 
 
   return (
-    <Container>
-      <NavCounter alarms={alarms}/>
+    <Container id="cscmap">
+      <div style={{ display: "flex" }}>
+        <ChangeMapStyle options={mapStyle} setStyleMap={setStyleMap} defaultValue={mapStyle[5]} />
+        <NavCounter alarms={alarms} type={"alarms"} />
+        <NavCounter alarms={ipLinks} type={"iplinks"} />
+      </div>
       <ReactMapGL
         {...viewport}
         mapboxApiAccessToken={TOKEN}
-        mapStyle={typeOfView?.lightv11}
+        mapStyle={styleMap}
         onViewportChange={(newViewport: any) => setViewport(newViewport)}
       >
         {/* Render unique markers for */}
@@ -165,7 +172,10 @@ const SupersetPluginChartCscMap = (props: any) => {
         <Source id="line-source" type="geojson" data={geojsonData}>
           <Layer {...lineLayerStyle} />
         </Source>
-        <FullscreenControl />
+        <div style={{ margin: "10px" }}>
+          <FullscreenControl />
+          <NavigationControl />
+        </div>
         <div>
         </div>
       </ReactMapGL>

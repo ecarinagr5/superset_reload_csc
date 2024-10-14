@@ -4,8 +4,6 @@ export const TOKEN =
 
 export const typeOfView: { [key: string]: string } = {
   streets9: 'mapbox://styles/mapbox/streets-v9',
-  standard: 'mapbox://styles/mapbox/standard',
-  satellite: 'mapbox://styles/mapbox/standard-satellite',
   streetsv12: 'mapbox://styles/mapbox/streets-v12',
   outdoorsv12: 'mapbox://styles/mapbox/outdoors-v12',
   lightv11: 'mapbox://styles/mapbox/light-v11',
@@ -15,6 +13,18 @@ export const typeOfView: { [key: string]: string } = {
   navigationDay: 'mapbox://styles/mapbox/navigation-day-v1',
   navigationNight: 'mapbox://styles/mapbox/navigation-night-v1',
 };
+
+export const mapStyle = [
+  "streets9",
+  "streetsv12",
+  "outdoorsv12",
+  "lightv11",
+  "darkv11",
+  "satellitev9",
+  "satelliteStreets",
+  "navigationDay",
+  "navigationNight"]
+
 
 
 export const SEVERITY: { [key: string]: string } = {
