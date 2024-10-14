@@ -32,14 +32,16 @@ import { typeOfView, TOKEN, mapStyle } from './utils';
 import NavCounter from './components/NavCounter';
 import { Container } from './styles';
 import ChangeMapStyle from './components/ChangeMapStyle';
+import type {FeatureCollection} from 'geojson';
+
 
 
 const SupersetPluginChartCscMap = (props: any) => {
   const { data_iplinks, data } = props;
   const [viewport, setViewport] = useState({
-    latitude: 18.000,
+    latitude: 17.000,
     longitude: -102.552784,
-    zoom: 3.4,
+    zoom: 3.2,
     width: '100%',
     height: '500px',
   });
@@ -97,7 +99,7 @@ const SupersetPluginChartCscMap = (props: any) => {
     }),
   );
 
-  const geojsonData = {
+  const geojsonData:FeatureCollection = {
     type: 'FeatureCollection',
     features: lineFeatures,
   };

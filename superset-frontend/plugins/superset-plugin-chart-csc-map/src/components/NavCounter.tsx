@@ -1,5 +1,5 @@
 import React, { useMemo } from "react"
-import { WrapNavBar, SideNavBar, HeaderNav, LinksNavBar } from "../styles/index";
+import { WrapNavBar, SideNavBar, HeaderNav } from "../styles/index";
 import { SEVERITY } from "../utils/index"
 
 interface NavCounterProps {
@@ -8,7 +8,6 @@ interface NavCounterProps {
 }
 
 const NavCounter: React.FC<NavCounterProps> = ({ alarms, type }) => {
-
     const alarmCounts = useMemo(() => {
         const counterAlarms: any = [];
         alarms?.forEach((alarm) => {
@@ -21,24 +20,34 @@ const NavCounter: React.FC<NavCounterProps> = ({ alarms, type }) => {
     }, [alarms])
 
     const totalAlarms = alarms?.length;
+
+
     return (
         <>
-            <HeaderNav>{type?.toUpperCase()}</HeaderNav>
-            {type === 'alarms' ? <WrapNavBar>
-                {
 
-                    Object.keys(alarmCounts).map((key, index) => {
-                        const percentage = (Number(alarmCounts[key]) || 0) / totalAlarms * 100;
-                        return (
-                            <>
-                                <SideNavBar key={index} style={{ width: `${percentage}%`, background: SEVERITY[key] }}>
-                                    {alarmCounts[key]}
-                                </SideNavBar>
-                            </>
-                        )
-                    })
-                }
-            </WrapNavBar> : <LinksNavBar><SideNavBar>{totalAlarms}</SideNavBar></LinksNavBar>}
+
+            {type === 'alarms' ?
+                <div style={{ width: "80%" }}>
+                    <HeaderNav>{type?.toUpperCase()}</HeaderNav>
+                    <WrapNavBar>
+                        {
+
+                            Object.keys(alarmCounts).map((key, index) => {
+                                const percentage = (Number(alarmCounts[key]) || 0) / totalAlarms * 100;
+                                return (
+                                    <SideNavBar key={index} style={{ width: `${percentage}%`, background: SEVERITY[key] }}>
+                                        {alarmCounts[key]}
+                                    </SideNavBar>
+                                )
+                            })
+                        }
+                    </WrapNavBar> </div> :
+                <div style={{ width: "10%" }}>
+                    <HeaderNav>{type?.toUpperCase()}</HeaderNav>
+                    <WrapNavBar style={{ background: "#a13a73" }}>
+                        <SideNavBar key="ipLinks">{totalAlarms}</SideNavBar>
+                    </WrapNavBar>
+                </div>}
         </>
     )
 }
