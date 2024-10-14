@@ -27,25 +27,26 @@ import ReactMapGL, {
   FullscreenControl,
 } from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { typeOfView ,geojsonData, TOKEN, lineFeatures} from './utils';
+import { typeOfView, TOKEN } from './utils';
+import NavCounter from './components/NavCounter';
+import { Container } from './styles';
 
 
 const SupersetPluginChartCscMap = (props: any) => {
   const { data_iplinks, data } = props;
   const [viewport, setViewport] = useState({
-    latitude: 23.634501, 
+    latitude: 23.634501,
     longitude: -102.552784,
-    zoom: 5,
+    zoom: 3.5,
     width: '100%',
     height: '500px',
   });
-const [alarms, setAlarms] = useState<any>([]);
-const [ipLinks, setIpLinks] = useState<any>([]);
+  const [alarms, setAlarms] = useState<any>([]);
+  const [ipLinks, setIpLinks] = useState<any>([]);
 
   useEffect(() => {
     setAlarms(data?.data?.content);
     setIpLinks(data_iplinks);
-    lineFeatures(data_iplinks);
   }, [data]);
 
   // Create a unique set of markers from the data
@@ -70,6 +71,33 @@ const [ipLinks, setIpLinks] = useState<any>([]);
     },
   );
 
+  // Transform the data into GeoJSON format for lines
+  const lineFeatures = data_iplinks?.map(
+    (link: {
+      SideA_Lon: any;
+      SideA_Lat: any;
+      SideB_Lon: any;
+      SideB_Lat: any;
+      LinkName: any;
+    }) => ({
+      type: 'Feature',
+      geometry: {
+        type: 'LineString',
+        coordinates: [
+          [link.SideA_Lon, link.SideA_Lat], // [longitude, latitude]
+          [link.SideB_Lon, link.SideB_Lat],
+        ],
+      },
+      properties: {
+        name: link.LinkName,
+      },
+    }),
+  );
+
+  const geojsonData = {
+    type: 'FeatureCollection',
+    features: lineFeatures,
+  };
 
 
   // Define layer style for the lines
@@ -83,62 +111,65 @@ const [ipLinks, setIpLinks] = useState<any>([]);
     },
   };
 
- 
+
   return (
-    <ReactMapGL
-      {...viewport}
-      mapboxApiAccessToken={TOKEN}
-      mapStyle={typeOfView?.lightv11}
-      onViewportChange={(newViewport: any) => setViewport(newViewport)}
-    >
-      {/* Render unique markers for */}
-      {Object.values(uniqueMarkers).map(
-        (marker: { latitude: number; longitude: number }, index: number) => (
+    <Container>
+      <NavCounter alarms={alarms}/>
+      <ReactMapGL
+        {...viewport}
+        mapboxApiAccessToken={TOKEN}
+        mapStyle={typeOfView?.lightv11}
+        onViewportChange={(newViewport: any) => setViewport(newViewport)}
+      >
+        {/* Render unique markers for */}
+        {Object.values(uniqueMarkers).map(
+          (marker: { latitude: number; longitude: number }, index: number) => (
+            <Marker
+              key={`marker-${index}`}
+              latitude={marker.latitude}
+              longitude={marker.longitude}
+            >
+              <div
+                style={{
+                  // eslint-disable-next-line theme-colors/no-literal-colors
+                  background: "#45bed6",
+                  height: '6px',
+                  width: '6px',
+                  borderRadius: '50%',
+                }}
+              />
+            </Marker>
+          ),
+        )}
+
+        {/* Render unique markers for alarms */}
+        {alarms?.map((marker: any[], index: number) => (
           <Marker
             key={`marker-${index}`}
-            latitude={marker.latitude}
-            longitude={marker.longitude}
+            latitude={marker[4]}
+            longitude={marker[5]}
           >
             <div
               style={{
                 // eslint-disable-next-line theme-colors/no-literal-colors
-                background: "#45bed6",
+                background: `${marker[1] === 'Warning' ? '#B6BF43' : marker[1] === 'Cleared' ? '#79A9C1' : 'red'}`,
                 height: '6px',
                 width: '6px',
                 borderRadius: '50%',
               }}
             />
           </Marker>
-        ),
-      )}
+        ))}
 
-      {/* Render unique markers for alarms */}
-      {alarms?.map((marker: any[], index: number) => (
-        <Marker
-          key={`marker-${index}`}
-          latitude={marker[4]}
-          longitude={marker[5]}
-        >
-          <div
-            style={{
-              // eslint-disable-next-line theme-colors/no-literal-colors
-              background: `${marker[1] === 'Warning' ? '#B6BF43' : marker[1] === 'Cleared' ? '#79A9C1' : 'red'}`,
-              height: '6px',
-              width: '6px',
-              borderRadius: '50%',
-            }}
-          />
-        </Marker>
-      ))}
-
-      {/* Render lines */}
-      <Source id="line-source" type="geojson" data={geojsonData}>
-        <Layer {...lineLayerStyle} />
-      </Source>
-      <FullscreenControl />
-      <div>
-      </div>
-    </ReactMapGL>
+        {/* Render lines */}
+        <Source id="line-source" type="geojson" data={geojsonData}>
+          <Layer {...lineLayerStyle} />
+        </Source>
+        <FullscreenControl />
+        <div>
+        </div>
+      </ReactMapGL>
+    </Container>
   );
 };
 
