@@ -30,7 +30,7 @@ import {altan, bait, telcel, mega, att}  from "./assets/constants/vendors.js"
 
 
 const Styles = styled.div`
-  position: relative;
+  position: relative;cp
   text-align: center;
     display: flex;
     flex-direction: row;

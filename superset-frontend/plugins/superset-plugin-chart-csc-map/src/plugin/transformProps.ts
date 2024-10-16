@@ -18,8 +18,9 @@
  * under the License.
  */
 import { ChartProps } from '@superset-ui/core';
-import data_iplinks from '../../constants/ip_links.json';
-import mockData from '../../constants/mock-alarms.json';
+import { data_iplinks, mockData } from '../constants/mockData.js';
+
+
 
 export default function transformProps(chartProps: ChartProps) {
   /**
