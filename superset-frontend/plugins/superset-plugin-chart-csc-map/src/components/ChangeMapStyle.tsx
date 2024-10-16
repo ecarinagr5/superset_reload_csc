@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { typeOfView } from '../utils';
-import { HeaderNav, SelectView } from '../styles';
+import { SelectView } from '../styles';
 
 interface IOptions {
     options: any;
