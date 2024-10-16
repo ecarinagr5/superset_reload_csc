@@ -77,7 +77,7 @@ const [imageLogo,] = useState<any>(vendorLogo[vendor]);
 
     let data = vendorData[vendor];
     // Make sure your data format is converted properly for DateAxis
-    data.forEach(function(item) {
+    data.forEach(function(item: { date: string | number | Date; }) {
         item.date = new Date(item.date);
     });
 
