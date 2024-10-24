@@ -30,7 +30,7 @@ import {altan, bait, telcel, mega, att}  from "./assets/constants/vendors.js"
 
 
 const Styles = styled.div`
-  position: relative;
+  position: relative;cp
   text-align: center;
     display: flex;
     flex-direction: row;
@@ -77,7 +77,7 @@ const [imageLogo,] = useState<any>(vendorLogo[vendor]);
 
     let data = vendorData[vendor];
     // Make sure your data format is converted properly for DateAxis
-    data.forEach(function(item) {
+    data.forEach(function(item: { date: string | number | Date; }) {
         item.date = new Date(item.date);
     });
 
