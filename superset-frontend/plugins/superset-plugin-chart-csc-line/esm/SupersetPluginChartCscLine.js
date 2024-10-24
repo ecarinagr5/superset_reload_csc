@@ -1,0 +1,178 @@
+var _templateObject;
+function _taggedTemplateLiteralLoose(e, t) { return t || (t = e.slice(0)), e.raw = t, e; }
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+import React, { useLayoutEffect, useState } from 'react';
+import * as am5 from "@amcharts/amcharts5";
+import * as am5xy from "@amcharts/amcharts5/xy";
+import am5themes_Animated from "@amcharts/amcharts5/themes/Animated";
+import LogoTelcel from './assets/images/logo-telcel.png';
+import LogoAltan from './assets/images/red-5g-altan-redes.png';
+import LogoAtt from './assets/images/ATT.png';
+import LogoBait from './assets/images/bait.png';
+import LogoMega from './assets/images/megacable-logo2.png';
+import { styled } from '@superset-ui/core';
+import { altan, bait, telcel, mega, att } from "./assets/constants/vendors.js";
+var Styles = styled.div(_templateObject || (_templateObject = _taggedTemplateLiteralLoose(["\n  position: relative;\n  text-align: center;\n    display: flex;\n    flex-direction: row;\n    align-items: center;\n    justify-content: center;\n    padding: 0 0;\n  }\n"])));
+var vendorLogo = {
+  TELCEL: LogoTelcel,
+  ALTAN: LogoAltan,
+  ATT: LogoAtt,
+  BAIT: LogoBait,
+  MEGA: LogoMega
+};
+var vendorData = {
+  ALTAN: altan,
+  BAIT: bait,
+  ATT: att,
+  TELCEL: telcel,
+  MEGA: mega
+};
+var vendorColors = {
+  ALTAN: 0xff0000,
+  BAIT: 0x808080,
+  ATT: 0x0000FF,
+  TELCEL: '#0080FF',
+  MEGA: 0x0000FF
+};
+export default function SupersetPluginChartCscLine(props) {
+  var {
+    vendor
+  } = props;
+  var numChart = Math.floor(Math.random() * 1000);
+  var [imageLogo] = useState(vendorLogo[vendor]);
+  useLayoutEffect(() => {
+    var root = am5.Root.new("chartdiv" + numChart);
+    root.setThemes([am5themes_Animated.new(root)]);
+    var data = vendorData[vendor];
+    // Make sure your data format is converted properly for DateAxis
+    data.forEach(function (item) {
+      item.date = new Date(item.date);
+    });
+    root.dateFormatter.setAll({
+      dateFormat: 'yyyy',
+      dateFields: ['valueX']
+    });
+
+    // Create chart
+    var chart = root.container.children.push(am5xy.XYChart.new(root, {
+      focusable: true,
+      panX: true,
+      panY: true,
+      wheelX: "panX",
+      wheelY: "zoomX",
+      pinchZoomX: true,
+      paddingLeft: 0
+    }));
+
+    // Create axes
+    var xAxis = chart.xAxes.push(am5xy.DateAxis.new(root, {
+      maxDeviation: 0,
+      groupData: false,
+      baseInterval: {
+        timeUnit: "minute",
+        count: 15
+      },
+      renderer: am5xy.AxisRendererX.new(root, {
+        minorGridEnabled: true,
+        minGridDistance: 1
+      }),
+      tooltip: am5.Tooltip.new(root, {})
+    }));
+
+    // Customize the labels
+    xAxis.get("renderer").labels.template.setAll({
+      fontSize: "8px",
+      // Set the font size
+      rotation: 45,
+      // Rotate the labels by 45 degrees
+      centerY: am5.p50,
+      // Adjust vertical alignment of labels
+      centerX: am5.p50 // Adjust horizontal alignment of labels
+    });
+    var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+      maxDeviation: 0.2,
+      renderer: am5xy.AxisRendererY.new(root, {})
+    }));
+    // Customize the labels
+    var series = chart.series.push(am5xy.LineSeries.new(root, {
+      minBulletDistance: 1,
+      connect: false,
+      xAxis: xAxis,
+      yAxis: yAxis,
+      valueYField: "value",
+      valueXField: "date",
+      tooltip: am5.Tooltip.new(root, {
+        labelText: "{valueY}"
+      })
+    }));
+    series.fills.template.setAll({
+      fillOpacity: 0.2,
+      visible: true
+    });
+    series.strokes.template.setAll({
+      strokeWidth: 2
+    });
+
+    // Set up data processor to parse string dates
+    series.data.processor = am5.DataProcessor.new(root, {
+      dateFormat: "yyyy-MM-dd",
+      dateFields: ["date"]
+    });
+    series.data.setAll(data);
+    series.bullets.push(function () {
+      var circle = am5.Circle.new(root, {
+        radius: 2,
+        fill: root.interfaceColors.get("background"),
+        stroke: series.get("fill"),
+        strokeWidth: 1
+      });
+      return am5.Bullet.new(root, {
+        sprite: circle
+      });
+    });
+    var colorToFill = am5.color(vendorColors[vendor]);
+    series.set("fill", colorToFill);
+    series.set("stroke", colorToFill);
+
+    // Add cursor
+    var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {
+      xAxis: xAxis,
+      behavior: "none"
+    }));
+    cursor.lineY.set("visible", false);
+    return () => {
+      root.dispose(); // Clean up on unmount
+    };
+  }, []);
+  return /*#__PURE__*/React.createElement(Styles, {
+    className: "wrap-cscline"
+  }, /*#__PURE__*/React.createElement("img", {
+    src: imageLogo,
+    alt: 'VendorImage',
+    width: "80px",
+    height: "auto"
+  }), /*#__PURE__*/React.createElement("div", {
+    id: "chartdiv" + numChart,
+    style: {
+      width: '100%',
+      height: '100px'
+    }
+  }));
+}
