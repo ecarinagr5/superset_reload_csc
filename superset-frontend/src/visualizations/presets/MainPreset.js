@@ -82,8 +82,8 @@ import { PivotTableChartPlugin as PivotTableChartPluginV2 } from '@superset-ui/p
 import { HandlebarsChartPlugin } from '@superset-ui/plugin-chart-handlebars';
 import { FilterPlugins } from 'src/constants';
 import TimeTableChartPlugin from '../TimeTable';
-import { SupersetPluginChartCscMap } from 'superset-plugin-chart-csc-map';
-import { SupersetPluginChartCscLine } from 'superset-plugin-chart-csc-line';
+import { SupersetPluginChartCscMap } from '@superset-ui/superset-plugin-chart-csc-map';
+import { SupersetPluginChartCscLine } from '@superset-ui/superset-plugin-chart-csc-line';
 
 export default class MainPreset extends Preset {
   constructor() {
