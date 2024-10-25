@@ -28,7 +28,7 @@ ARG NPM_BUILD_CMD="build"
 
 # Include translations in the final build. The default supports en only to
 # reduce complexity and weight for those only using en
-ARG BUILD_TRANSLATIONS="true"
+ARG BUILD_TRANSLATIONS="false"
 
 # Used by docker-compose to skip the frontend build,
 # in dev we mount the repo and build the frontend inside docker
@@ -67,14 +67,6 @@ RUN --mount=type=bind,target=./package.json,src=./superset-frontend/package.json
 # Runs the webpack build process
 COPY superset-frontend /app/superset-frontend
 
-# Compiles .json files from the .po files, then deletes the .po files
-RUN if [ "$BUILD_TRANSLATIONS" = "true" ]; then \
-        npm run build-translation; \
-    else \
-        echo "Skipping translations as requested by build flag"; \
-    fi
-RUN rm /app/superset/translations/*/LC_MESSAGES/*.po
-RUN rm /app/superset/translations/messages.pot
 
 ######################################################################
 # Final lean image...
@@ -127,10 +119,8 @@ COPY --chown=superset:superset superset superset
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --no-cache-dir -e .
 
-# Copy the .json translations from the frontend layer
-COPY --chown=superset:superset --from=superset-node /app/superset/translations superset/translations
 
-# Compile translations for the backend - this generates .mo files, then deletes the .po files
+# Delete or comment out this part too, if you don't need translations.
 COPY ./scripts/translations/generate_mo_files.sh ./scripts/translations/
 RUN if [ "$BUILD_TRANSLATIONS" = "true" ]; then \
         ./scripts/translations/generate_mo_files.sh \
