@@ -301,7 +301,7 @@ export function Menu({
     );
   };
   return (
-    <StyledHeader className="top" id="main-menu" role="navigation">
+    <StyledHeader className="top carina" id="main-menu" role="navigation">
       <Global styles={globalStyles(theme)} />
       <Row>
         <Col md={16} xs={24}>

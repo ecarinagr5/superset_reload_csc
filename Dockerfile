@@ -66,24 +66,7 @@ RUN --mount=type=bind,target=./package.json,src=./superset-frontend/package.json
 
 # Runs the webpack build process
 COPY superset-frontend /app/superset-frontend
-# This copies the .po files needed for translation
-RUN mkdir -p /app/superset/translations
-COPY superset/translations /app/superset/translations
-RUN if [ "$DEV_MODE" = "false" ]; then \
-        BUILD_TRANSLATIONS=$BUILD_TRANSLATIONS npm run ${BUILD_CMD}; \
-    else \
-        echo "Skipping 'npm run ${BUILD_CMD}' in dev mode"; \
-    fi
 
-
-# Compiles .json files from the .po files, then deletes the .po files
-RUN if [ "$BUILD_TRANSLATIONS" = "true" ]; then \
-        npm run build-translation; \
-    else \
-        echo "Skipping translations as requested by build flag"; \
-    fi
-RUN rm /app/superset/translations/*/LC_MESSAGES/*.po
-RUN rm /app/superset/translations/messages.pot
 
 ######################################################################
 # Final lean image...
@@ -136,10 +119,8 @@ COPY --chown=superset:superset superset superset
 RUN --mount=type=cache,target=/root/.cache/pip \
     pip install --no-cache-dir -e .
 
-# Copy the .json translations from the frontend layer
-COPY --chown=superset:superset --from=superset-node /app/superset/translations superset/translations
 
-# Compile translations for the backend - this generates .mo files, then deletes the .po files
+# Delete or comment out this part too, if you don't need translations.
 COPY ./scripts/translations/generate_mo_files.sh ./scripts/translations/
 RUN if [ "$BUILD_TRANSLATIONS" = "true" ]; then \
         ./scripts/translations/generate_mo_files.sh \
