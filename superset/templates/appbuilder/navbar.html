@@ -20,6 +20,7 @@
 {% set app_icon_width = appbuilder.app.config['APP_ICON_WIDTH'] %}
 {% set logo_target_path = appbuilder.app.config['LOGO_TARGET_PATH'] or '/' %}
 {% set root_path = logo_target_path if not logo_target_path.startswith('/') else '/superset' + logo_target_path if current_user.username is defined else '#'  %}
+{% set logo_white_mode = '/static/assets/images/altan-logo@2x.svg' %}
 
 {% block navbar %}
   <div id="app-menu">
@@ -34,7 +35,7 @@
           <a class="navbar-brand" href="{{ root_path }}">
             <img
               width="{{ app_icon_width }}"
-              src="{{ appbuilder.app_icon }}"
+              src="{{ logo_white_mode }}"
               alt="{{ appbuilder.app_name }}"
               loading="lazy"
             />
